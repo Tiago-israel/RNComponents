@@ -22,8 +22,24 @@ const config: StorybookConfig = {
         !plugin.name?.includes('vite:react')
     ) || [];
 
+    const extensions = [
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".json",
+    ];
+
     return {
       ...config,
+      define: {
+        ...config.define,
+        __DEV__: "true",
+      },
       plugins: [
         ...filteredPlugins,
         react({
@@ -37,17 +53,25 @@ const config: StorybookConfig = {
           "react-native": "react-native-web",
           "react-native-linear-gradient": "react-native-web-linear-gradient",
         },
-        extensions: [
-          ".web.js",
-          ".web.jsx",
-          ".web.ts",
-          ".web.tsx",
-          ".js",
-          ".jsx",
-          ".ts",
-          ".tsx",
-          ".json",
-        ],
+        extensions,
+        // Prefer .web.js over .js for react-native-gesture-handler and other RN libs
+        extensionAlias: {
+          ".js": [".web.js", ".js"],
+          ".ts": [".web.ts", ".ts"],
+          ".tsx": [".web.tsx", ".tsx"],
+        },
+      },
+      optimizeDeps: {
+        ...config.optimizeDeps,
+        esbuildOptions: {
+          ...config.optimizeDeps?.esbuildOptions,
+          resolveExtensions: extensions,
+          mainFields: ["browser", "module", "main"],
+          define: {
+            ...config.optimizeDeps?.esbuildOptions?.define,
+            __DEV__: "true",
+          },
+        },
       },
     };
   },

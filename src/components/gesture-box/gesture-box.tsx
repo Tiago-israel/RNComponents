@@ -5,11 +5,16 @@ import {
   Pressable,
   View,
 } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 const COLORS = ['#b58df1', '#fa7f7c', '#ffe780', '#82cab2'];
 
 export function GestureBox() {
   const colorIndex = useRef(new Animated.Value(0)).current;
+
+  const gesture = Gesture.Tap().onStart(() => {
+    console.log('onStart');
+  });
   const currentIndex = useRef(0);
 
   const handlePress = () => {
@@ -29,11 +34,14 @@ export function GestureBox() {
   });
 
   return (
-    <View style={styles.container}>
-      <Pressable onPress={handlePress}>
-        <Animated.View style={[styles.box, { backgroundColor }]} />
-      </Pressable>
-    </View>
+    <GestureDetector gesture={gesture}>
+      <View style={styles.container}>
+        <Pressable onPress={handlePress}>
+          <Animated.View style={[styles.box, { backgroundColor }]} />
+        </Pressable>
+      </View>
+    </GestureDetector>
+
   );
 }
 
